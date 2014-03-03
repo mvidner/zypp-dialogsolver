@@ -1,7 +1,7 @@
 #
-# spec file for package libqdialogsolver
+# spec file for package libqdialogsolver1
 #
-# Copyright (c) 2007-2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,21 +15,22 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-# norootforbuild
 
 Name:           @PACKAGE@
 Version:        @VERSION@
 Release:        0
+Summary:        QDialog class for showing solver results
 License:        GPL-2.0+
 Group:          System/Packages
-Summary:        QDialog class for showing solver results
 %if 0%{?suse_version}
 %requires_ge    libzypp
 %endif
 Requires:       graphviz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  libqt4-devel gettext-devel cmake
-BuildRequires:	gcc-c++ >= 4.5
+BuildRequires:  cmake
+BuildRequires:  gcc-c++ >= 4.5
+BuildRequires:  gettext-devel
+BuildRequires:  libqt4-devel
 %if 0%{?suse_version} <= 1220
 BuildRequires:  yast2-libyui-devel
 %else
@@ -37,14 +38,13 @@ BuildRequires:  libyui-devel
 %endif
 
 # API Changes in zypp 2.1
-BuildRequires: libzypp-devel >= 2.8.7
-Source:        libqdialogsolver1-%{version}.tar.bz2
+BuildRequires:  libzypp-devel >= 2.8.7
+Source:         libqdialogsolver1-%{version}.tar.bz2
 
 %description
 This package provides a QDialog class for showing solver results
 
 %package devel
-License:        GPL-2.0+
 Requires:       libqdialogsolver1 == %{version}
 Summary:        QDialog class for showing solver results
 Group:          Development/Libraries/Others
