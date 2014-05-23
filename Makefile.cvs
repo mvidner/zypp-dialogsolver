@@ -3,6 +3,7 @@
 #
 
 PREFIX = /usr
+LIB = $(shell rpm --eval '%{_lib}')
 
 configure: 
 	mkdir build ;\

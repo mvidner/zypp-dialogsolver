@@ -10,7 +10,7 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0005 OLD)
 endif(COMMAND cmake_policy)
 ADD_DEFINITIONS(
-		-DY2LOG=\\\"QT4\\\" ${QT_DEFINITIONS}
+		-DY2LOG=\\\"libqdialogsolver\\\" ${QT_DEFINITIONS}
 		-DICONDIR=\\"${Y2QT_ICONDIR}\\"
 		-DLOCALEDIR=\\\"${Y2QT_LOCALEDIR}\\\"
 		-DTHEMEDIR=\\\"${Y2QT_THEMEDIR}\\\"
