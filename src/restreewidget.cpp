@@ -61,7 +61,10 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
     m_Splitter->setOrientation( Qt::Vertical );
 
     m_RevGraphView = new ResGraphView(m_Splitter, "m_RevGraphView" );
-    m_RevGraphView->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)5, (QSizePolicy::SizeType)5, 0, 2, m_RevGraphView->sizePolicy().hasHeightForWidth() ) );
+    QSizePolicy rp(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    rp.setHorizontalStretch(0);
+    rp.setVerticalStretch(2);
+    m_RevGraphView->setSizePolicy(rp);
 
     connect(m_RevGraphView, SIGNAL(dispDetails(const QString&, const zypp::PoolItem)),
             this,           SLOT(setDetailText(const QString&, const zypp::PoolItem)));
@@ -74,7 +77,10 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
 
     tabWidget = new QTabWidget();
     tabWidget->setObjectName("tabWidget");
-    tabWidget->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)7, (QSizePolicy::SizeType)7, 0, 0, tabWidget->sizePolicy().hasHeightForWidth() ) );
+    QSizePolicy tp(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    tp.setHorizontalStretch(0);
+    tp.setVerticalStretch(0);
+    tabWidget->setSizePolicy(tp);
     descriptionBox->addWidget(tabWidget);
 
     QBoxLayout * checkBox = new QHBoxLayout();
