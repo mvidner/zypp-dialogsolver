@@ -32,6 +32,7 @@
 #include <qlabel.h>
 #include <qstringlist.h>
 #include <qnamespace.h>
+#include <QTreeWidget>
 #include "resgraphview.h"
 #include "zypp/Resolver.h"
 #include "zypp/ZYppFactory.h"
@@ -115,26 +116,30 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
     m_Detailstext->setResizePolicy( Q3TextBrowser::Manual );
     tabWidget->addTab( m_Detailstext, i18n("Description") );
 
-    installListView = new Q3ListView( tabWidget, "installListView" );
-    installListView->addColumn( i18n("Name") );
-    installListView->addColumn( i18n("Version") );
-    installListView->addColumn( i18n("Dependency") );
-    installListView->addColumn( i18n("Kind") );
+    QStringList headerLabels;
+    headerLabels << i18n("Name");
+    headerLabels << i18n("Version");
+    headerLabels << i18n("Dependency");
+    headerLabels << i18n("Kind");
+
+    installListView = new QTreeWidget( tabWidget );
+    installListView->setObjectName( "installListView" );
+    installListView->setColumnCount(headerLabels.size());
+    installListView->setHeaderLabels(headerLabels);
     installListView->setAllColumnsShowFocus( TRUE );
     tabWidget->addTab( installListView, i18n("Needs") );
 
-    installedListView = new Q3ListView( tabWidget, "installListView" );
-    installedListView->addColumn( i18n("Name") );
-    installedListView->addColumn( i18n("Version") );
-    installedListView->addColumn( i18n("Dependency") );
-    installedListView->addColumn( i18n("Kind") );
+    installedListView = new QTreeWidget( tabWidget );
+    installedListView->setObjectName( "installListView" );
+    installedListView->setColumnCount(headerLabels.size());
+    installedListView->setHeaderLabels(headerLabels);
     installedListView->setAllColumnsShowFocus( TRUE );
     tabWidget->addTab( installedListView, i18n("Needed by") );
 
-    connect( installedListView, SIGNAL( clicked( Q3ListViewItem* ) ),
-             this,              SLOT( itemSelected( Q3ListViewItem* ) ) );
-    connect( installListView,   SIGNAL( clicked( Q3ListViewItem* ) ),
-             this,              SLOT( itemSelected( Q3ListViewItem* ) ) );
+    connect( installedListView, SIGNAL( itemActivated ( QTreeWidgetItem *, int ) ),
+             this,              SLOT( itemSelected( QTreeWidgetItem * ) ) );
+    connect( installListView,   SIGNAL( itemActivated ( QTreeWidgetItem *, int ) ),
+             this,              SLOT( itemSelected( QTreeWidgetItem * ) ) );
     connect( resolvableList, SIGNAL( activated( const QString & ) ),
              this,           SLOT( slotComboActivated( const QString & ) ) );
     connect( showRecommend, SIGNAL( stateChanged ( int )  ),
@@ -179,6 +184,19 @@ void ResTreeWidget::dumpRevtree()
     selectItem(_lastSelectedItem); // Show the selected item (Could be set via API meanwhile)
 }
 
+
+QTreeWidgetItem * ResTreeWidget::listItemFromSolver(zypp::solver::detail::ItemCapKindList::const_iterator iter) {
+    QTreeWidgetItem * qitem = new QTreeWidgetItem();
+    QString edition = iter->item->edition().asString().c_str();
+    edition += ".";
+    edition += iter->item->arch().asString().c_str();
+    qitem->setText(0, QString(iter->item->name().c_str()));
+    qitem->setText(1, edition);
+    qitem->setText(2, QString(iter->cap.asString().c_str()));
+    qitem->setText(3, QString(iter->capKind.asString().c_str()));
+    return qitem;
+}
+
 void ResTreeWidget::setDetailText(const QString& _s, const zypp::PoolItem item)
 {
     if (resolver) {
@@ -189,15 +207,7 @@ void ResTreeWidget::setDetailText(const QString& _s, const zypp::PoolItem item)
 
 	for (zypp::solver::detail::ItemCapKindList::const_iterator iter = installedList.begin();
 	     iter != installedList.end(); ++iter) {
-	    QString edition = iter->item->edition().asString().c_str();
-	    edition += ".";
-	    edition += iter->item->arch().asString().c_str();
-
-	    new Q3ListViewItem( installedListView,
-				QString(iter->item->name().c_str()),
-				edition,
-				QString(iter->cap.asString().c_str()),
-				QString(iter->capKind.asString().c_str()));
+            installedListView->addTopLevelItem(listItemFromSolver(iter));
 	}
 
 	if (item.status().staysInstalled()) {
@@ -205,28 +215,13 @@ void ResTreeWidget::setDetailText(const QString& _s, const zypp::PoolItem item)
 	    zypp::solver::detail::ItemCapKindList installedSatisfied = resolver->installedSatisfied(item);
 	    for (zypp::solver::detail::ItemCapKindList::const_iterator iter = installedSatisfied.begin();
 		 iter != installedSatisfied.end(); ++iter) {
-		QString edition = iter->item->edition().asString().c_str();
-		edition += ".";
-		edition += iter->item->arch().asString().c_str();
-
-		new Q3ListViewItem( installedListView,
-				    QString(iter->item->name().c_str()),
-				    edition,
-				    QString(iter->cap.asString().c_str()),
-				    QString(iter->capKind.asString().c_str()));
+                installedListView->addTopLevelItem(listItemFromSolver(iter));
 	    }
 	}
 
 	for (zypp::solver::detail::ItemCapKindList::const_iterator iter = installList.begin();
 	     iter != installList.end(); ++iter) {
-	    QString edition = iter->item->edition().asString().c_str();
-	    edition += ".";
-	    edition += iter->item->arch().asString().c_str();
-	    new Q3ListViewItem( installListView,
-				QString(iter->item->name().c_str()),
-				edition,
-				QString(iter->cap.asString().c_str()),
-				QString(iter->capKind.asString().c_str()));
+            installListView->addTopLevelItem(listItemFromSolver(iter));
 	}
     }
 
@@ -260,11 +255,10 @@ void ResTreeWidget::selectItem(const zypp::PoolItem item) {
     selectItem (itemString);
 }
 
-void ResTreeWidget::itemSelected( Q3ListViewItem* item) {
+void ResTreeWidget::itemSelected( QTreeWidgetItem * item) {
     if ( !item )
         return;
     item->setSelected( TRUE );
-    item->repaint();
     selectItem (item->text( 0 )+"-"+item->text( 1 ) );
 }
 

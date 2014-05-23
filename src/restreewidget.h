@@ -26,7 +26,6 @@
 #include <qwidget.h>
 #include <qtabwidget.h>
 #include <QCheckBox>
-#include <q3listview.h>
 #include <q3textbrowser.h>
 #include "zypp/Resolver.h"
 #include <zypp/PoolItem.h>
@@ -43,6 +42,8 @@ class QSplitter;
 class QTextBrowser;
 class QComboBox;
 class QLabel;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 typedef std::set<zypp::PoolItem> PoolItemSet;
 
@@ -71,20 +72,21 @@ protected:
     QCheckBox *showInstalled, *showRecommend;
     QLabel *searchLabel;
     QTabWidget *tabWidget;
-    Q3ListView *installListView;
-    Q3ListView *installedListView;
+    QTreeWidget *installListView;
+    QTreeWidget *installedListView;
     Q3TextBrowser* m_Detailstext;
     QComboBox *resolvableList;
     PoolItemSet alreadyHitItems;
 
     void selectItem(const QString & itemString);
     void buildTreeBranch (ResGraphView::tlist &childList, const zypp::PoolItem item, int &id);
+    QTreeWidgetItem * listItemFromSolver(zypp::solver::detail::ItemCapKindList::const_iterator iter);
 
     QString _lastSelectedItem;
 
 protected slots:
     virtual void setDetailText(const QString&, const zypp::PoolItem);
-    void itemSelected( Q3ListViewItem* item);
+    void itemSelected( QTreeWidgetItem * item);
     void slotComboActivated( const QString &s );
     void showInstalledChanged(int state);
     void showRecommendChanged(int state);
