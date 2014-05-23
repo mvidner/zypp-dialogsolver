@@ -44,9 +44,6 @@
 class QPopupMenu;
 class QString;
 
-class KConfigGroup;
-
-
 /**
  * Drawing parameters for an object.
  * A Helper Interface for RectDrawing.
