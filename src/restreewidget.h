@@ -54,13 +54,13 @@ class ResTreeWidget : public QWidget
 
 public:
     ResTreeWidget(QWidget* parent = 0, zypp::solver::detail::Resolver_Ptr r = NULL,
-		  const zypp::PoolItem item = zypp::PoolItem(),
-		  const char* name = 0, Qt::WFlags fl = 0 );
+                  const zypp::PoolItem item = zypp::PoolItem(),
+                  const char* name = 0, Qt::WFlags fl = 0 );
     ~ResTreeWidget();
 
     QSplitter* m_Splitter;
     ResGraphView* m_RevGraphView;
-    void selectItem(const zypp::PoolItem item);    
+    void selectItem(const zypp::PoolItem item);
 
     void dumpRevtree();
     void buildTree();
@@ -68,7 +68,7 @@ public:
 protected:
     zypp::solver::detail::Resolver_Ptr resolver;
     zypp::PoolItem root_item;
-    
+
     QVBoxLayout* ResTreeWidgetLayout;
     Q3VBox *descriptionBox;
     Q3HBox *searchBox;
@@ -77,11 +77,11 @@ protected:
     QLabel *searchLabel;
     QTabWidget *tabWidget;
     Q3ListView *installListView;
-    Q3ListView *installedListView;    
+    Q3ListView *installedListView;
     Q3TextBrowser* m_Detailstext;
     QComboBox *resolvableList;
     PoolItemSet alreadyHitItems;
-    
+
     void selectItem(const QString & itemString);
     void buildTreeBranch (ResGraphView::tlist &childList, const zypp::PoolItem item, int &id);
 
@@ -89,11 +89,11 @@ protected:
 
 protected slots:
     virtual void setDetailText(const QString&, const zypp::PoolItem);
-    void itemSelected( Q3ListViewItem* item);    
+    void itemSelected( Q3ListViewItem* item);
     void slotComboActivated( const QString &s );
     void showInstalledChanged(int state);
     void showRecommendChanged(int state);
-    
+
 private:
     QPixmap image0;
 

@@ -39,14 +39,14 @@ public:
 
     const QString&nodename()const;
     const QString&source()const;
-    const QString&label()const;    
+    const QString&label()const;
     void setSource(const QString&);
     virtual void setSelected(bool);
 
 protected:
     QString m_Nodename;
     QString m_SourceNode;
-    QString m_Label;    
+    QString m_Label;
 };
 
 class GraphEdge;

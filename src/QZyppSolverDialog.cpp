@@ -39,9 +39,10 @@ struct UndoTransact : public resfilter::PoolItemFilterFunctor
 	:resStatus(status)
     { }
 
-    bool operator()( PoolItem item )		// only transacts() items go here
+    bool operator()( PoolItem item ) // only transacts() items go here
     {
-	item.status().resetTransact( resStatus );// clear any solver/establish transactions
+        // clear any solver/establish transactions
+	item.status().resetTransact( resStatus );
 	return true;
     }
 };
@@ -55,21 +56,21 @@ QZyppSolverDialog::QZyppSolverDialog(const zypp::PoolItem item)
     zypp::ResPool pool( zypp::getZYpp()->pool() );
     pool.proxy().saveState(); // Save old pool
     const QCursor oldCursor = cursor ();
-    setCursor (Qt::WaitCursor); 		    
-    
+    setCursor (Qt::WaitCursor);
+
     // resetting all selections
     UndoTransact resetting (ResStatus::USER);
     invokeOnEach ( pool.begin(), pool.end(),
-		   resfilter::ByTransact( ),			// Resetting all transcations
+		   resfilter::ByTransact( ), // Resetting all transcations
 		   functor::functorRef<bool,PoolItem>(resetting) );
 
     // set the selected item for installation only
     item.status().setToBeInstalled( ResStatus::USER);
-    
-    // and resolve		    
+
+    // and resolve
     resolver = new zypp::solver::detail::Resolver( pool );
     resolver->resolvePool();
-    
+
     // show the results
     QHBoxLayout* layout = new QHBoxLayout (this);
     solvertree = new SolverTree(this, resolver,item);
@@ -83,7 +84,7 @@ QZyppSolverDialog::QZyppSolverDialog(const zypp::PoolItem item)
 			       i18n("Critical Error") ,
 			       i18n("No valid solver result"));
     }
-    setCursor (oldCursor);     
+    setCursor (oldCursor);
 }
 
 
