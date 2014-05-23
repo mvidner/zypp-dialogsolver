@@ -35,11 +35,10 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpixmap.h>
-#include <q3ptrlist.h>
-#include <q3valuevector.h>
 #include <qcolor.h>
 #include <qapplication.h>
 #include <qstringlist.h>
+#include <QVector>
 
 class QPopupMenu;
 class QString;
@@ -144,9 +143,16 @@ private:
     QPixmap pix;
     Position pos;
     int maxLines;
+
+    Field()
+      : text()
+      , pix()
+      , pos(Default)
+      , maxLines(0)
+    {}
   };
 
-  Q3ValueVector<Field> _field;
+  QVector<Field> _field;
 };
 
 

@@ -108,16 +108,9 @@ const QFont& StoredDrawParams::font() const
 
 void StoredDrawParams::ensureField(int f)
 {
-  static Field* def = 0;
-  if (!def) {
-    def = new Field();
-    def->pos = Default;
-    def->maxLines = 0;
-  }
-
   if (f<0 || f>=MAX_FIELD) return;
 
-  if ((int)_field.size() < f+1) _field.resize(f+1, *def);
+  if ((int)_field.size() < f+1) _field.resize(f+1);
 }
 
 
