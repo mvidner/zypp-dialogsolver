@@ -41,8 +41,6 @@ class QSpacerItem;
 class ResGraphView;
 class QSplitter;
 class QTextBrowser;
-class Q3VBox;
-class Q3HBox;
 class QComboBox;
 class QLabel;
 
@@ -70,9 +68,6 @@ protected:
     zypp::PoolItem root_item;
 
     QVBoxLayout* ResTreeWidgetLayout;
-    Q3VBox *descriptionBox;
-    Q3HBox *searchBox;
-    Q3HBox *checkBox;
     QCheckBox *showInstalled, *showRecommend;
     QLabel *searchLabel;
     QTabWidget *tabWidget;

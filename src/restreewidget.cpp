@@ -62,29 +62,48 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
 
     m_RevGraphView = new ResGraphView(m_Splitter, "m_RevGraphView" );
     m_RevGraphView->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)5, (QSizePolicy::SizeType)5, 0, 2, m_RevGraphView->sizePolicy().hasHeightForWidth() ) );
-    connect(m_RevGraphView,SIGNAL(dispDetails(const QString&, const zypp::PoolItem)),this,SLOT(setDetailText(const QString&, const zypp::PoolItem)));
 
-    descriptionBox = new Q3VBox( m_Splitter, "descriptionBox");
+    connect(m_RevGraphView, SIGNAL(dispDetails(const QString&, const zypp::PoolItem)),
+            this,           SLOT(setDetailText(const QString&, const zypp::PoolItem)));
+
+    QWidget * descriptionBoxWidget = new QWidget( m_Splitter );
+    QBoxLayout * descriptionBox = new QVBoxLayout();
+    descriptionBox->setObjectName("descriptionBox");
     descriptionBox->setSpacing (5);
-    tabWidget = new QTabWidget( descriptionBox, "tabWidget");
-    tabWidget->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)7, (QSizePolicy::SizeType)7, 0, 0, tabWidget->sizePolicy().hasHeightForWidth() ) );
+    descriptionBoxWidget->setLayout(descriptionBox);
 
-    checkBox = new Q3HBox( descriptionBox, "checkBox");
+    tabWidget = new QTabWidget();
+    tabWidget->setObjectName("tabWidget");
+    tabWidget->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)7, (QSizePolicy::SizeType)7, 0, 0, tabWidget->sizePolicy().hasHeightForWidth() ) );
+    descriptionBox->addWidget(tabWidget);
+
+    QBoxLayout * checkBox = new QHBoxLayout();
+    checkBox->setObjectName("checkBox");
     checkBox->setSpacing (5);
-    showInstalled = new QCheckBox(i18n("show installed packages"), checkBox);
-    showRecommend = new QCheckBox(i18n("show recommended packages"), checkBox);;
+    descriptionBox->addLayout(checkBox);
+
+    showInstalled = new QCheckBox(i18n("show installed packages"));
+    showRecommend = new QCheckBox(i18n("show recommended packages"));
+    checkBox->addWidget(showInstalled);
+    checkBox->addWidget(showRecommend);
     showInstalled->setChecked(true);
     if (resolver->onlyRequires())
 	showRecommend->setChecked(false);
     else
 	showRecommend->setChecked(true);
 
-    searchBox = new Q3HBox( descriptionBox, "searchBox");
+    QBoxLayout * searchBox = new QHBoxLayout();
+    searchBox->setObjectName("searchBox");
     searchBox->setSpacing (5);
-    searchLabel = new QLabel (i18n("Search: "), searchBox);
+    descriptionBox->addLayout(searchBox);
+
+    searchLabel = new QLabel (i18n("Search: "));
     searchLabel->setMaximumSize( searchLabel->minimumSizeHint () );
-    resolvableList = new QComboBox( true, searchBox);
+    resolvableList = new QComboBox();
+    resolvableList->setEditable(true);
     resolvableList->setAutoCompletion(true);
+    searchBox->addWidget(searchLabel);
+    searchBox->addWidget(resolvableList);
 
     m_Detailstext = new Q3TextBrowser( tabWidget, "m_Detailstext" );
     m_Detailstext->setResizePolicy( Q3TextBrowser::Manual );
@@ -106,11 +125,16 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
     installedListView->setAllColumnsShowFocus( TRUE );
     tabWidget->addTab( installedListView, i18n("Needed by") );
 
-    connect( installedListView, SIGNAL( clicked( Q3ListViewItem* ) ), this, SLOT( itemSelected( Q3ListViewItem* ) ) );
-    connect( installListView, SIGNAL( clicked( Q3ListViewItem* ) ), this, SLOT( itemSelected( Q3ListViewItem* ) ) );
-    connect( resolvableList, SIGNAL( activated( const QString & ) ), this, SLOT( slotComboActivated( const QString & ) ) );
-    connect( showRecommend, SIGNAL( stateChanged ( int )  ), this, SLOT( showRecommendChanged ( int ) ) );
-    connect( showInstalled, SIGNAL( stateChanged ( int )  ), this, SLOT( showInstalledChanged ( int ) ) );
+    connect( installedListView, SIGNAL( clicked( Q3ListViewItem* ) ),
+             this,              SLOT( itemSelected( Q3ListViewItem* ) ) );
+    connect( installListView,   SIGNAL( clicked( Q3ListViewItem* ) ),
+             this,              SLOT( itemSelected( Q3ListViewItem* ) ) );
+    connect( resolvableList, SIGNAL( activated( const QString & ) ),
+             this,           SLOT( slotComboActivated( const QString & ) ) );
+    connect( showRecommend, SIGNAL( stateChanged ( int )  ),
+             this,          SLOT( showRecommendChanged ( int ) ) );
+    connect( showInstalled, SIGNAL( stateChanged ( int )  ),
+             this,          SLOT( showInstalledChanged ( int ) ) );
 
     ResTreeWidgetLayout->addWidget(m_Splitter);
 
