@@ -73,7 +73,7 @@ public:
         }
         targetData(){key="";}
     };
-    typedef Q3ValueList<targetData> tlist;
+    typedef QList<targetData> tlist;
 
     struct keyData {
 	zypp::PoolItem item;

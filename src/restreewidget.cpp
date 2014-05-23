@@ -201,7 +201,7 @@ void ResTreeWidget::setDetailText(const QString& _s, const zypp::PoolItem item)
     }
 
     m_Detailstext->setText(_s);
-    Q3ValueList<int> list = m_Splitter->sizes();
+    QList<int> list = m_Splitter->sizes();
     if (list.count()!=2) return;
     if (list[1]==0) {
         int h = height();
