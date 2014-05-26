@@ -26,7 +26,7 @@
 #include <qwidget.h>
 #include <qtabwidget.h>
 #include <QCheckBox>
-#include <q3textbrowser.h>
+#include <QTextBrowser>
 #include "zypp/Resolver.h"
 #include <zypp/PoolItem.h>
 #include <zypp/Resolvable.h>
@@ -74,7 +74,7 @@ protected:
     QTabWidget *tabWidget;
     QTreeWidget *installListView;
     QTreeWidget *installedListView;
-    Q3TextBrowser* m_Detailstext;
+    QTextBrowser* m_Detailstext;
     QComboBox *resolvableList;
     PoolItemSet alreadyHitItems;
 

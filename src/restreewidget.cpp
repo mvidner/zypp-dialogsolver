@@ -112,8 +112,8 @@ ResTreeWidget::ResTreeWidget(QWidget* parent, zypp::solver::detail::Resolver_Ptr
     searchBox->addWidget(searchLabel);
     searchBox->addWidget(resolvableList);
 
-    m_Detailstext = new Q3TextBrowser( tabWidget, "m_Detailstext" );
-    m_Detailstext->setResizePolicy( Q3TextBrowser::Manual );
+    m_Detailstext = new QTextBrowser( tabWidget );
+    m_Detailstext->setObjectName( "m_Detailstext" );
     tabWidget->addTab( m_Detailstext, i18n("Description") );
 
     QStringList headerLabels;
@@ -225,7 +225,7 @@ void ResTreeWidget::setDetailText(const QString& _s, const zypp::PoolItem item)
 	}
     }
 
-    m_Detailstext->setText(_s);
+    m_Detailstext->setHtml(_s);
     QList<int> list = m_Splitter->sizes();
     if (list.count()!=2) return;
     if (list[1]==0) {
