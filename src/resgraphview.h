@@ -23,7 +23,7 @@
 
 #include <q3canvas.h>
 #include <qfile.h>
-#include <q3process.h>
+#include <QProcess>
 #include <qmap.h>
 #include <zypp/PoolItem.h>
 #include <zypp/Resolver.h>
@@ -100,6 +100,7 @@ public slots:
 
 protected slots:
     virtual void dotExit();
+    virtual void dotError();
 
 protected:
     Q3Canvas*m_Canvas;
@@ -107,7 +108,7 @@ protected:
     GraphTreeLabel*m_Selected;
     QFile*dotTmpFile;
     QString dotOutput;
-    Q3Process*renderProcess;
+    QProcess*renderProcess;
     trevTree m_Tree;
     const QString&getLabelstring(const QString&nodeName);
     QColor getBgColor(const QString&nodeName)const;

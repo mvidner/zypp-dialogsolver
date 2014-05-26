@@ -22,7 +22,7 @@
 #include "graphtreelabel.h"
 #include "pannerview.h"
 #include "graphtree_defines.h"
-#include <q3process.h>
+#include <QProcess>
 #include <qtooltip.h>
 #include <qwmatrix.h>
 #include <q3popupmenu.h>
@@ -137,21 +137,20 @@ void ResGraphView::endInsert()
 
 void ResGraphView::dotExit()
 {
-    
-    dotOutput+=QString::fromLocal8Bit(renderProcess->readStdout());
-    
+    dotOutput+=QString::fromLocal8Bit(renderProcess->readAllStandardOutput());
+
     // remove line breaks when lines to long
     QRegExp endslash("\\\\\\n");
     dotOutput.replace(endslash,"");
 
 #if 0
-    QFile *dot = new QFile("dotoutput");  
+    QFile *dot = new QFile("dotoutput");
     dot->open(IO_ReadWrite);
-    QTextStream stream(dot);    
+    QTextStream stream(dot);
     stream << dotOutput << flush;
     dot->close();
 #endif
-    
+
     double scale = 1.0, scaleX = 1.0, scaleY = 1.0;
     double dotWidth, dotHeight;
     QTextStream* dotStream;
@@ -447,26 +446,23 @@ void ResGraphView::dumpRevtree()
         }
     }
     stream << "}\n"<<flush;
-    renderProcess = new Q3Process();
-    renderProcess->addArgument( "dot" );
-    renderProcess->addArgument( filename );
-    renderProcess->addArgument( "-Tplain");
 
-    QStringList envs;
-    envs << "LANG" << "C";
-    
-    connect(renderProcess,SIGNAL(processExited()),this,SLOT(dotExit()));
+    renderProcess = new QProcess();
+    connect(renderProcess, SIGNAL(finished(int)),
+            this,          SLOT(dotExit()));
+    connect(renderProcess, SIGNAL(error(QProcess::ProcessError)),
+            this,          SLOT(dotError()));
+    renderProcess->setEnvironment(QStringList() << "LANG=C");
 
-    if (!renderProcess->start(&envs)) {
-        QString argu;
-        for (int c=0;c<renderProcess->arguments().count();++c) {
-            argu+=QString(" %1").arg(renderProcess->arguments()[c]);
-        }
-        QString error = i18n("Could not start process \"%1\".").arg(argu);
+    renderProcess->start("dot", QStringList() << filename << "-Tplain");
+}
+
+void ResGraphView::dotError()
+{
+        QString error = i18n("Could not start process \"%1\".").arg("dot");
         showText(error);
         renderProcess=0;
         //delete renderProcess;<
-    }
 }
 
 QString ResGraphView::toolTip(const QString&_nodename,bool full)const
