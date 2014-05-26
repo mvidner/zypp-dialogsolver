@@ -25,12 +25,10 @@
 #include <QProcess>
 #include <qtooltip.h>
 #include <qwmatrix.h>
-#include <q3popupmenu.h>
 #include <qpainter.h>
 #include <qregexp.h>
 #include <qmessagebox.h>
 #include <qfiledialog.h>
-#include <q3cstring.h>
 #include <qcursor.h>
 #include <qdesktopwidget.h>
 #include <qtextstream.h>
@@ -815,82 +813,84 @@ void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
     Q3CanvasItem* i = (l.count() == 0) ? 0 : l.first();
     trevTree::ConstIterator it;
 
-    Q3PopupMenu popup;
+    QAction * unselectItem = NULL;
+    QAction * selectItem = NULL;
+    QAction * displayDetails = NULL;
+    QMenu popup;
     if (i && i->rtti()==GRAPHTREE_LABEL) {
         if (m_Selected == i) {
-            popup.insertItem(i18n("Unselect item"),401);
+            unselectItem = popup.addAction(i18n("Unselect item"));
         } else {
-            popup.insertItem(i18n("Select item"),402);
+            selectItem = popup.addAction(i18n("Select item"));
         }
         popup.insertSeparator();
-        popup.insertItem(i18n("Display details"),403);
+        displayDetails = popup.addAction(i18n("Display details"));
         popup.insertSeparator();
     }
-    popup.insertItem(i18n("Rotate counter-clockwise"),101);
-    popup.insertItem(i18n("Rotate clockwise"),102);
+    QAction * rotateCCW = popup.addAction(i18n("Rotate counter-clockwise"));
+    QAction * rotateCW  = popup.addAction(i18n("Rotate clockwise"));
     popup.insertSeparator();
-    popup.setCheckable(true);
-    popup.insertItem(i18n("Save tree as png"),201);
+    QAction * saveImage = popup.addAction(i18n("Save tree as png"));
 
-    int r = popup.exec(e->globalPos());
-
-    switch (r) {
-        case 101:
-        {
-            int dir = globalDirection;
-            setNewDirection(++dir);
-        }
-        break;
-        case 102:
-        {
-            int dir = globalDirection;
-            setNewDirection(--dir);
-        }
-        break;
-        case 201:
-        {
-            QString fn = QFileDialog::getSaveFileName(
-						      "/home",
-						      "Images (*.png *.xpm *.jpg)",
-						      this,
-						      "save file dialog",
-						      "Choose a filename to save under" );
-            if (!fn.isEmpty()) {
-                if (m_Marker) {
-                    m_Marker->hide();
-                }
-                if (m_Selected) {
-                    m_Selected->setSelected(false);
-                }
-                QPixmap pix(m_Canvas->size());
-                QPainter p(&pix);
-                m_Canvas->drawArea( m_Canvas->rect(), &p );
-                pix.save(fn,"PNG");
-                if (m_Marker) {
-                    m_Marker->show();
-                }
-                if (m_Selected) {
-                    m_Selected->setSelected(true);
-                    m_Canvas->update();
-                    m_CompleteView->updateCurrentRect();
-                }
+    QAction * r = popup.exec(e->globalPos());
+    if (r == NULL)
+    {
+        return;
+    }
+    else if (r == rotateCCW)
+    {
+        int dir = globalDirection;
+        setNewDirection(++dir);
+    }
+    else if (r == rotateCW)
+    {
+        int dir = globalDirection;
+        setNewDirection(--dir);
+    }
+    else if (r == saveImage)
+    {
+        QString fn = QFileDialog::getSaveFileName(
+            "/home",
+            "Images (*.png *.xpm *.jpg)",
+            this,
+            "save file dialog",
+            "Choose a filename to save under" );
+        if (!fn.isEmpty()) {
+            if (m_Marker) {
+                m_Marker->hide();
+            }
+            if (m_Selected) {
+                m_Selected->setSelected(false);
+            }
+            QPixmap pix(m_Canvas->size());
+            QPainter p(&pix);
+            m_Canvas->drawArea( m_Canvas->rect(), &p );
+            pix.save(fn,"PNG");
+            if (m_Marker) {
+                m_Marker->show();
+            }
+            if (m_Selected) {
+                m_Selected->setSelected(true);
+                m_Canvas->update();
+                m_CompleteView->updateCurrentRect();
             }
         }
-        case 401:
-            makeSelected(0);
-        break;
-        case 402:
-            makeSelected((GraphTreeLabel*)i);
-        break;
-        case 403:
-	    it = m_Tree.find(((GraphTreeLabel*)i)->nodename());
-	    if (it!=m_Tree.end()) {
-		emit dispDetails(toolTip(((GraphTreeLabel*)i)->nodename(),true),
-				 it.data().item);
-	    }
-        break;
-        default:
-        break;
+    }
+    else if (r == unselectItem)
+    {
+        makeSelected(0);
+    }
+    else if (r == selectItem)
+    {
+        makeSelected((GraphTreeLabel*)i);
+    }
+    else if (r == displayDetails)
+    {
+        it = m_Tree.find(((GraphTreeLabel*)i)->nodename());
+        if (it!=m_Tree.end()) {
+            emit dispDetails(toolTip(((GraphTreeLabel*)i)->nodename(),true),
+                             it.data().item);
+        }
     }
 }
 
