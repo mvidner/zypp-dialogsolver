@@ -65,9 +65,9 @@ ResGraphView::ResGraphView(QWidget * parent, const char * name, Qt::WFlags f)
     connect(this, SIGNAL(contentsMoving(int,int)),
             this, SLOT(contentsMovingSlot(int,int)));
     connect(m_CompleteView, SIGNAL(zoomRectMoved(int,int)),
-            this, SLOT(zoomRectMoved(int,int)));
+            this,           SLOT(zoomRectMoved(int,int)));
     connect(m_CompleteView, SIGNAL(zoomRectMoveFinished()),
-            this, SLOT(zoomRectMoveFinished()));
+            this,           SLOT(zoomRectMoveFinished()));
     m_LastAutoPosition = TopLeft;
     _isMoving = false;
     _noUpdateZoomerPos = false;
@@ -158,6 +158,8 @@ void ResGraphView::dotExit()
     clear();
     beginInsert();
     /* mostly taken from kcachegrind */
+    // http://www.graphviz.org/content/output-formats#dplain
+    // The lower left corner of the drawing is at the origin.
     while (1) {
         line = dotStream->readLine();
         if (line.isNull()) break;
@@ -690,9 +692,9 @@ bool ResGraphView::event(QEvent *event)
 		 QString nm = tl->nodename();
 		 QString tipStr = toolTip(nm);
 		 if (tipStr.length()>0) {
-		     QToolTip::showText(helpEvent->globalPos(), tipStr);		     
+		     QToolTip::showText(helpEvent->globalPos(), tipStr);
 		 } else {
-		     QToolTip::hideText();		     
+		     QToolTip::hideText();
 		 }
 	     }
 	 }
@@ -740,7 +742,7 @@ void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 		if (it!=m_Tree.end()) {
 		    zypp::ResPool pool( zypp::getZYpp()->pool() );
 		    const QCursor oldCursor = cursor ();
-		    setCursor (Qt::WaitCursor); 		    
+		    setCursor (Qt::WaitCursor);
 
 		    QZyppSolverDialog *dialog = new QZyppSolverDialog(it.data().item);
 		    dialog->setCaption(getLabelstring(((GraphTreeLabel*)i)->nodename()));
@@ -748,13 +750,13 @@ void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 		    setCursor (oldCursor);
 		    dialog->show();
 		    dialog->raise();
-		    dialog->activateWindow();		    
+		    dialog->activateWindow();
 		    dialog->selectItem(it.data().item);
 		    pool.proxy().restoreState(); // Restore old state
 		}
             }
         }
-    }    
+    }
 }
 
 void ResGraphView::contentsMousePressEvent ( QMouseEvent * e )
@@ -915,9 +917,9 @@ void ResGraphView::selectItem(const QString & itemString) {
 	if (it!=m_Tree.end()) {
 	    emit dispDetails(toolTip(tlab->nodename(),true),
 			     it.data().item);
-	}	
+	}
 	setContentsPos (tlab->x() - int(visibleWidth() *_cvZoomW/2),
-			tlab->y() - int(visibleHeight() *_cvZoomH/2));	
+			tlab->y() - int(visibleHeight() *_cvZoomH/2));
     }
 }
 
@@ -939,7 +941,7 @@ void ResGraphView::init()
     renderProcess = 0;
     m_Marker = 0;
     m_CompleteView = new PannerView(this);
-    
+
     m_CompleteView->setVScrollBarMode(Q3ScrollView::AlwaysOff);
     m_CompleteView->setHScrollBarMode(Q3ScrollView::AlwaysOff);
     m_CompleteView->raise();
@@ -957,8 +959,6 @@ void ResGraphView::init()
     m_Tree.clear();
     m_NodeList.clear();
     m_LabelMap.clear();
-    
 }
-
 
 #include "resgraphview.moc"
