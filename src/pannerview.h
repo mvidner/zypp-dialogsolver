@@ -43,7 +43,7 @@ signals:
 
 protected:
     virtual void drawContents(QPainter* p,  int clipx, int clipy, int clipw, int cliph);
-    virtual void drawContents(QPainter* p);    
+    virtual void drawContents(QPainter* p);
     virtual void contentsMouseMoveEvent(QMouseEvent* e);
     virtual void contentsMousePressEvent(QMouseEvent* e);
     virtual void contentsMouseReleaseEvent(QMouseEvent*);

@@ -22,8 +22,10 @@
 #include <qevent.h>
 
 PannerView::PannerView(QWidget* parent, const char* name)
-    : QGraphicsView(parent, name,Qt::WNoAutoErase | Qt::WStaticContents )
+    : QGraphicsView(parent)
 {
+    setObjectName(name);
+    setWindowFlags(Qt::WNoAutoErase | Qt::WStaticContents);
     m_Moving = false;
     viewport()->setBackgroundMode(Qt::NoBackground);
     setBackgroundMode(Qt::NoBackground);
