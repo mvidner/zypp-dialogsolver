@@ -42,8 +42,11 @@ signals:
   void zoomRectMoveFinished();
 
 protected:
-    virtual void drawContents(QPainter* p,  int clipx, int clipy, int clipw, int cliph);
-    virtual void drawContents(QPainter* p);
+    virtual void drawItems(QPainter * p,
+                           int numItems,
+                           QGraphicsItem * items[],
+                           const QStyleOptionGraphicsItem options[]);
+    virtual void drawItems(QPainter* p);
     virtual void contentsMouseMoveEvent(QMouseEvent* e);
     virtual void contentsMousePressEvent(QMouseEvent* e);
     virtual void contentsMouseReleaseEvent(QMouseEvent*);

@@ -22,7 +22,8 @@
 #include <qpainter.h>
 
 GraphTreeLabel::GraphTreeLabel(const QString&text, const QString&_nodename,const QRect&r,QGraphicsScene*c)
-    : QGraphicsRectItem(r,c),StoredDrawParams()
+    : QGraphicsRectItem(QRectF(r), NULL /*parent*/, c)
+    , StoredDrawParams()
 {
     m_Nodename = _nodename;
     m_SourceNode = QString::null;
@@ -53,7 +54,7 @@ void GraphTreeLabel::setBgColor(const QColor&c)
 
 void GraphTreeLabel::drawShape(QPainter& p)
 {
-    QRect r = rect();
+    QRectF r = rect();
 /*
     p.setPen(blue);
     p.drawRect(r);
@@ -88,7 +89,7 @@ void GraphTreeLabel::setSource(const QString&_s)
 }
 
 GraphEdge::GraphEdge(QGraphicsScene*c)
-    : QGraphicsPathItem(c)
+    : QGraphicsPathItem(NULL /*parent*/, c)
 {
 }
 
@@ -98,45 +99,7 @@ GraphEdge::~GraphEdge()
 
 void GraphEdge::drawShape(QPainter& p)
 {
-    p.drawPolyline(poly);
-}
-
-Q3PointArray GraphEdge::areaPoints() const
-{
-  int minX = poly[0].x(), minY = poly[0].y();
-  int maxX = minX, maxY = minY;
-  int i;
-
-  if (0) qDebug("GraphEdge::areaPoints\n  P 0: %d/%d", minX, minY);
-  int len = poly.count();
-  for (i=1;i<len;i++) {
-    if (poly[i].x() < minX) minX = poly[i].x();
-    if (poly[i].y() < minY) minY = poly[i].y();
-    if (poly[i].x() > maxX) maxX = poly[i].x();
-    if (poly[i].y() > maxY) maxY = poly[i].y();
-    if (0) qDebug("  P %d: %d/%d", i, poly[i].x(), poly[i].y());
-  }
-  Q3PointArray a = poly.copy(),  b = poly.copy();
-  if (minX == maxX) {
-    a.translate(-2, 0);
-    b.translate(2, 0);
-  }
-  else {
-    a.translate(0, -2);
-    b.translate(0, 2);
-  }
-  a.resize(2*len);
-  for (i=0;i<len;i++)
-    a[2 * len - 1 -i] = b[i];
-
-  if (0) {
-      qDebug(" Result:");
-      for (i=0;i<2*len;i++)
-      qDebug("  P %d: %d/%d", i, a[i].x(), a[i].y());
-  }
-
-  return a;
-
+    //    p.drawPolyline(poly);
 }
 
 int GraphEdge::type()const
@@ -144,14 +107,15 @@ int GraphEdge::type()const
     return GRAPHTREE_LINE;
 }
 
-GraphEdgeArrow::GraphEdgeArrow(GraphEdge*_parent,QGraphicsScene*c)
-    : QGraphicsPolygonItem(c),_edge(_parent)
+GraphEdgeArrow::GraphEdgeArrow(GraphEdge*_parent, QGraphicsScene*c)
+    : QGraphicsPolygonItem(NULL /*parent*/, c)
+    , _edge(_parent)
 {
 }
 
 void GraphEdgeArrow::drawShape(QPainter&p)
 {
-    QGraphicsPolygonItem::drawShape(p);
+    //    QGraphicsPolygonItem::drawShape(p);
 }
 
 int GraphEdgeArrow::type()const
@@ -167,8 +131,8 @@ GraphEdge*GraphEdgeArrow::edge()
 /* taken from KCacheGrind project */
 QPixmap*GraphMark::_p=0;
 
-GraphMark::GraphMark(GraphTreeLabel*n,QGraphicsScene*c)
-    : QGraphicsRectItem(c)
+GraphMark::GraphMark(GraphTreeLabel*n, QGraphicsScene*c)
+    : QGraphicsRectItem(NULL /*parent*/, c)
 {
     if (!_p) {
 
@@ -202,9 +166,9 @@ GraphMark::GraphMark(GraphTreeLabel*n,QGraphicsScene*c)
         }
     }
 
-    setSize(_p->width(), _p->height());
-    move(n->rect().center().x()-_p->width()/2,
-    n->rect().center().y()-_p->height()/2);
+    setRect(0, 0, _p->width(), _p->height());
+    setPos(n->rect().center().x() - _p->width()/2,
+           n->rect().center().y() - _p->height()/2);
 }
 
 GraphMark::~ GraphMark()

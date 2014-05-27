@@ -35,10 +35,13 @@ PannerView::~PannerView()
 {
 }
 
-void PannerView::drawContents(QPainter* p,  int clipx, int clipy, int clipw, int cliph)
+void PannerView::drawItems(QPainter * p,
+                           int numItems,
+                           QGraphicsItem * items[],
+                           const QStyleOptionGraphicsItem options[])
 {
     p->save();
-    QGraphicsView::drawContents(p,clipx,clipy,clipw,cliph);
+    QGraphicsView::drawItems(p, numItems, items, options);
     p->restore();
     if (m_ZoomRect.isValid()) {
         p->setPen(Qt::darkRed);
@@ -49,9 +52,9 @@ void PannerView::drawContents(QPainter* p,  int clipx, int clipy, int clipw, int
     }
 }
 
-void PannerView::drawContents(QPainter* p)
+void PannerView::drawItems(QPainter* p)
 {
-    drawContents (p,0,0,0,0);
+    drawItems(p, 0, NULL, NULL);
 }
 
 
@@ -59,8 +62,9 @@ void PannerView::setZoomRect(const QRect& theValue)
 {
     QRect oldRect = m_ZoomRect;
     m_ZoomRect = theValue;
-    updateContents(oldRect);
-    updateContents(m_ZoomRect);
+    // http://doc.qt.digia.com/4.0/q3scrollview.html#updateContents-2
+    //FIXME    updateContents(oldRect);
+    //FIXME    updateContents(m_ZoomRect);
 }
 
 /*!
@@ -103,7 +107,8 @@ void PannerView::contentsMouseReleaseEvent(QMouseEvent*)
  */
 void PannerView::updateCurrentRect()
 {
-    if (m_ZoomRect.isValid()) updateContents(m_ZoomRect);
+    if (m_ZoomRect.isValid())
+      // FIXME updateContents(m_ZoomRect);
 }
 
 #include "pannerview.moc"

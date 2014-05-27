@@ -164,7 +164,7 @@ void StoredDrawParams::setMaxLines(int f, int m)
 // RectDrawing
 //
 
-RectDrawing::RectDrawing(QRect r)
+RectDrawing::RectDrawing(QRectF r)
 {
   _fm = 0;
   _dp = 0;
@@ -193,7 +193,7 @@ void RectDrawing::setDrawParams(DrawParams* dp)
   _dp = dp;
 }
 
-void RectDrawing::setRect(QRect r)
+void RectDrawing::setRect(QRectF r)
 {
   _rect = r;
 
@@ -207,7 +207,7 @@ void RectDrawing::setRect(QRect r)
   _fontHeight = 0;
 }
 
-QRect RectDrawing::remainingRect(DrawParams* dp)
+QRectF RectDrawing::remainingRect(DrawParams* dp)
 {
   if (!dp) dp = drawParams();
 
@@ -237,7 +237,7 @@ void RectDrawing::drawBack(QPainter* p, DrawParams* dp)
   if (!dp) dp = drawParams();
   if (_rect.width()<=0 || _rect.height()<=0) return;
 
-  QRect r = _rect;
+  QRectF r = _rect;
   QColor normal = dp->backColor();
   if (dp->selected()) normal = normal.light();
   bool isCurrent = dp->current();
@@ -336,7 +336,7 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
     _fontHeight = _fm->height();
   }
 
-  QRect r = _rect;
+  QRectF r = _rect;
 
 //  if (0) Debug(90100) << "DrawField: Rect " << r.x() << "/" << r.y()
 //		   << " - " << r.width() << "x" << r.height() << endl;

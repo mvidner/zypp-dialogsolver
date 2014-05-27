@@ -168,7 +168,7 @@ private:
 class RectDrawing
 {
 public:
-  RectDrawing(QRect);
+  RectDrawing(QRectF);
   ~RectDrawing();
 
   // The default DrawParams object used.
@@ -184,16 +184,16 @@ public:
   bool drawField(QPainter*, int f, DrawParams* dp = 0);
 
   // resets rectangle for free space
-  void setRect(QRect);
+  void setRect(QRectF);
 
   // Returns the rectangle area still free of text/pixmaps after
   // a number of drawText() calls.
-  QRect remainingRect(DrawParams* dp = 0);
+  QRectF remainingRect(DrawParams* dp = 0);
 
 private:
   int _usedTopLeft, _usedTopCenter, _usedTopRight;
   int _usedBottomLeft, _usedBottomCenter, _usedBottomRight;
-  QRect _rect;
+  QRectF _rect;
 
   // temporary
   int _fontHeight;

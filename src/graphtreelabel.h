@@ -73,7 +73,6 @@ public:
     virtual ~GraphEdge();
 
     virtual void drawShape(QPainter&);
-    Q3PointArray areaPoints() const;
     virtual int type()const;
 };
 

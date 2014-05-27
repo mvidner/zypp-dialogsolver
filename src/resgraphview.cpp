@@ -33,6 +33,7 @@
 #include <qdesktopwidget.h>
 #include <qtextstream.h>
 #include <qevent.h>
+#include <q3pointarray.h>
 
 #include <math.h>
 
@@ -49,17 +50,19 @@ using namespace zypp;
 static int globalDirection = 0;
 
 ResGraphView::ResGraphView(QWidget * parent, const char * name, Qt::WFlags f)
- : QGraphicsView(parent,name,f)
+    : QGraphicsView(parent)
 {
+    setObjectName(name);
+    setWindowFlags(f);
     m_Canvas = 0L;
     dotTmpFile = 0;
     m_Selected = 0;
     renderProcess = 0;
     m_Marker = 0;
     m_CompleteView = new PannerView(this);
-    
-    m_CompleteView->setVScrollBarMode(Q3ScrollView::AlwaysOff);
-    m_CompleteView->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+
+    m_CompleteView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_CompleteView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_CompleteView->raise();
     m_CompleteView->hide();
     connect(this, SIGNAL(contentsMoving(int,int)),
@@ -77,7 +80,7 @@ ResGraphView::ResGraphView(QWidget * parent, const char * name, Qt::WFlags f)
 
 ResGraphView::~ResGraphView()
 {
-    setCanvas(0);
+    setScene(0);
     delete m_Canvas;
     delete dotTmpFile;
     delete m_CompleteView;
@@ -87,16 +90,27 @@ ResGraphView::~ResGraphView()
 void ResGraphView::showText(const QString&s)
 {
     clear();
-    m_Canvas = new QGraphicsScene(QApplication::desktop()->width(),
-                        QApplication::desktop()->height());
+    m_Canvas = new QGraphicsScene(0,
+                                  0,
+                                  QApplication::desktop()->width(),
+                                  QApplication::desktop()->height());
 
-    QGraphicsSimpleTextItem* t = new QGraphicsSimpleTextItem(s, m_Canvas);
-    t->move(5, 5);
+    QGraphicsSimpleTextItem* t = new QGraphicsSimpleTextItem(s, NULL /*parent*/, m_Canvas);
+    t->setPos(5, 5);
     t->show();
-    center(0,0);
-    setCanvas(m_Canvas);
+    //FIXME    center(0,0);
+    setScene(m_Canvas);
     m_Canvas->update();
     m_CompleteView->hide();
+}
+
+static QPainterPath fromControlPoints(const Q3PointArray &pa)
+{
+    QPainterPath path;
+    path.moveTo(pa[0]);
+    for (int i = 1; i < pa.size(); i += 3)
+        path.cubicTo(pa[i], pa[(i + 1) % pa.size()], pa[(i + 2) % pa.size()]);
+    return path;
 }
 
 void ResGraphView::clear()
@@ -113,8 +127,8 @@ void ResGraphView::clear()
     if (!m_Canvas) return;
     delete m_Canvas;
     m_Canvas = 0;
-    setCanvas(0);
-    m_CompleteView->setCanvas(0);
+    setScene(0);
+    m_CompleteView->setScene(0);
 }
 
 void ResGraphView::beginInsert()
@@ -181,7 +195,8 @@ void ResGraphView::dotExit()
             _yMargin = 50;
             if (h < QApplication::desktop()->height())
                 _yMargin += (QApplication::desktop()->height()-h)/2;
-            m_Canvas = new QGraphicsScene(int(w+2*_xMargin), int(h+2*_yMargin));
+            m_Canvas = new QGraphicsScene(0, 0,
+                                          int(w+2*_xMargin), int(h+2*_yMargin));
             continue;
         }
         if ((cmd != "node") && (cmd != "edge")) {
@@ -208,10 +223,10 @@ void ResGraphView::dotExit()
             QRect r(xx-w/2, yy-h/2, w, h);
             GraphTreeLabel*t=new GraphTreeLabel(label,nodeName,r,m_Canvas);
             if (isStart(nodeName)) {
-                ensureVisible(r.x(),r.y());
+                //FIXME                ensureVisible(r.x(),r.y());
             }
             t->setBgColor(getBgColor(nodeName));
-            t->setZ(1.0);
+            t->setZValue(1.0);
             t->show();
             m_NodeList[nodeName]=t;
         } else {
@@ -247,7 +262,7 @@ void ResGraphView::dotExit()
 		arrowColor = Qt::green;
             n->setPen(QPen(arrowColor,1));
             n->setControlPoints(pa,false);
-            n->setZ(0.5);
+            n->setZValue(0.5);
             n->show();
 
             /* arrow */
@@ -310,8 +325,8 @@ void ResGraphView::dotExit()
         s += i18n("Please check that 'dot' is installed (package GraphViz).");
         showText(s);
     } else {
-        setCanvas(m_Canvas);
-        m_CompleteView->setCanvas(m_Canvas);
+        setScene(m_Canvas);
+        m_CompleteView->setScene(m_Canvas);
     }
     endInsert();
     renderProcess=0;
@@ -925,7 +940,7 @@ void ResGraphView::selectItem(const QString & itemString) {
 
 void ResGraphView::init()
 {
-    setCanvas(0);
+    setScene(0);
     if (m_Canvas)
        delete m_Canvas;
     if (dotTmpFile)
