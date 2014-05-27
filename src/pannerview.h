@@ -20,12 +20,14 @@
 #ifndef PANNERVIEW_H
 #define PANNERVIEW_H
 
-#include <q3canvas.h>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
 /**
 	@author Rajko Albrecht <ral@alwins-world.de>
 */
-class PannerView : public Q3CanvasView
+class PannerView : public QGraphicsView
 {
 Q_OBJECT
 public:

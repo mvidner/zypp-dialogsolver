@@ -21,8 +21,8 @@
 #include "graphtree_defines.h"
 #include <qpainter.h>
 
-GraphTreeLabel::GraphTreeLabel(const QString&text, const QString&_nodename,const QRect&r,Q3Canvas*c)
-    : Q3CanvasRectangle(r,c),StoredDrawParams()
+GraphTreeLabel::GraphTreeLabel(const QString&text, const QString&_nodename,const QRect&r,QGraphicsScene*c)
+    : QGraphicsRectItem(r,c),StoredDrawParams()
 {
     m_Nodename = _nodename;
     m_SourceNode = QString::null;
@@ -66,7 +66,7 @@ void GraphTreeLabel::drawShape(QPainter& p)
 
 void GraphTreeLabel::setSelected(bool s)
 {
-    Q3CanvasRectangle::setSelected(s);
+    QGraphicsRectItem::setSelected(s);
     StoredDrawParams::setSelected(s);
     update();
 }
@@ -87,8 +87,8 @@ void GraphTreeLabel::setSource(const QString&_s)
     m_SourceNode=_s;
 }
 
-GraphEdge::GraphEdge(Q3Canvas*c)
-    : Q3CanvasSpline(c)
+GraphEdge::GraphEdge(QGraphicsScene*c)
+    : QGraphicsPathItem(c)
 {
 }
 
@@ -144,14 +144,14 @@ int GraphEdge::rtti()const
     return GRAPHTREE_LINE;
 }
 
-GraphEdgeArrow::GraphEdgeArrow(GraphEdge*_parent,Q3Canvas*c)
-    : Q3CanvasPolygon(c),_edge(_parent)
+GraphEdgeArrow::GraphEdgeArrow(GraphEdge*_parent,QGraphicsScene*c)
+    : QGraphicsPolygonItem(c),_edge(_parent)
 {
 }
 
 void GraphEdgeArrow::drawShape(QPainter&p)
 {
-    Q3CanvasPolygon::drawShape(p);
+    QGraphicsPolygonItem::drawShape(p);
 }
 
 int GraphEdgeArrow::rtti()const
@@ -167,8 +167,8 @@ GraphEdge*GraphEdgeArrow::edge()
 /* taken from KCacheGrind project */
 QPixmap*GraphMark::_p=0;
 
-GraphMark::GraphMark(GraphTreeLabel*n,Q3Canvas*c)
-    : Q3CanvasRectangle(c)
+GraphMark::GraphMark(GraphTreeLabel*n,QGraphicsScene*c)
+    : QGraphicsRectItem(c)
 {
     if (!_p) {
 

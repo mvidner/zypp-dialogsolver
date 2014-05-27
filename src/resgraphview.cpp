@@ -49,7 +49,7 @@ using namespace zypp;
 static int globalDirection = 0;
 
 ResGraphView::ResGraphView(QWidget * parent, const char * name, Qt::WFlags f)
- : Q3CanvasView(parent,name,f)
+ : QGraphicsView(parent,name,f)
 {
     m_Canvas = 0L;
     dotTmpFile = 0;
@@ -87,10 +87,10 @@ ResGraphView::~ResGraphView()
 void ResGraphView::showText(const QString&s)
 {
     clear();
-    m_Canvas = new Q3Canvas(QApplication::desktop()->width(),
+    m_Canvas = new QGraphicsScene(QApplication::desktop()->width(),
                         QApplication::desktop()->height());
 
-    Q3CanvasText* t = new Q3CanvasText(s, m_Canvas);
+    QGraphicsSimpleTextItem* t = new QGraphicsSimpleTextItem(s, m_Canvas);
     t->move(5, 5);
     t->show();
     center(0,0);
@@ -179,7 +179,7 @@ void ResGraphView::dotExit()
             _yMargin = 50;
             if (h < QApplication::desktop()->height())
                 _yMargin += (QApplication::desktop()->height()-h)/2;
-            m_Canvas = new Q3Canvas(int(w+2*_xMargin), int(h+2*_yMargin));
+            m_Canvas = new QGraphicsScene(int(w+2*_xMargin), int(h+2*_yMargin));
             continue;
         }
         if ((cmd != "node") && (cmd != "edge")) {
@@ -682,9 +682,9 @@ bool ResGraphView::event(QEvent *event)
      if (event->type() == QEvent::ToolTip) {
          QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
 	 QPoint cPos = viewportToContents(helpEvent->pos());
-	 Q3CanvasItemList l = canvas()->collisions(cPos);
+	 QList l = canvas()->collisions(cPos);
 	 if (l.count() > 0) {
-	     Q3CanvasItem* i = l.first();
+	     QGraphicsItem* i = l.first();
 	     if (i->rtti() == GRAPHTREE_LABEL) {
 		 GraphTreeLabel*tl = (GraphTreeLabel*)i;
 		 QString nm = tl->nodename();
@@ -702,7 +702,7 @@ bool ResGraphView::event(QEvent *event)
 
 void ResGraphView::resizeEvent(QResizeEvent*e)
 {
-    Q3CanvasView::resizeEvent(e);
+    QGraphicsView::resizeEvent(e);
     if (m_Canvas) updateSizes(e->size());
 }
 
@@ -731,9 +731,9 @@ void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
     setFocus();
     if (e->button() == Qt::LeftButton) {
-        Q3CanvasItemList l = canvas()->collisions(e->pos());
+        QList l = canvas()->collisions(e->pos());
         if (l.count()>0) {
-            Q3CanvasItem* i = l.first();
+            QGraphicsItem* i = l.first();
             if (i->rtti()==GRAPHTREE_LABEL) {
 		trevTree::ConstIterator it;
 		it = m_Tree.find(((GraphTreeLabel*)i)->nodename());
@@ -769,9 +769,9 @@ void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
     _isMoving = false;
     updateZoomerPos();
     if (e->button() == Qt::LeftButton) {
-        Q3CanvasItemList l = canvas()->collisions(e->pos());
+        QList l = canvas()->collisions(e->pos());
         if (l.count()>0) {
-            Q3CanvasItem* i = l.first();
+            QGraphicsItem* i = l.first();
             if (i->rtti()==GRAPHTREE_LABEL) {
                 makeSelected( (GraphTreeLabel*)i);
 		
@@ -809,8 +809,8 @@ void ResGraphView::setNewDirection(int dir)
 void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
 {
     if (!m_Canvas) return;
-    Q3CanvasItemList l = canvas()->collisions(e->pos());
-    Q3CanvasItem* i = (l.count() == 0) ? 0 : l.first();
+    QList l = canvas()->collisions(e->pos());
+    QGraphicsItem* i = (l.count() == 0) ? 0 : l.first();
     trevTree::ConstIterator it;
 
     QAction * unselectItem = NULL;

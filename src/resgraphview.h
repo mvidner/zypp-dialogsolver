@@ -21,7 +21,9 @@
 #define RESGRAPHVIEW_H
 
 
-#include <q3canvas.h>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <qfile.h>
 #include <QProcess>
 #include <qmap.h>
@@ -45,7 +47,7 @@ class CContextListener;
 /**
 	@author Rajko Albrecht <ral@alwins-world.de>
 */
-class ResGraphView : public Q3CanvasView
+class ResGraphView : public QGraphicsView
 {
     Q_OBJECT
 public:
@@ -103,7 +105,7 @@ protected slots:
     virtual void dotError();
 
 protected:
-    Q3Canvas*m_Canvas;
+    QGraphicsScene*m_Canvas;
     GraphMark*m_Marker;
     GraphTreeLabel*m_Selected;
     QFile*dotTmpFile;

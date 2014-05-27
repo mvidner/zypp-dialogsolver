@@ -22,7 +22,7 @@
 #include <qevent.h>
 
 PannerView::PannerView(QWidget* parent, const char* name)
-    : Q3CanvasView(parent, name,Qt::WNoAutoErase | Qt::WStaticContents )
+    : QGraphicsView(parent, name,Qt::WNoAutoErase | Qt::WStaticContents )
 {
     m_Moving = false;
     viewport()->setBackgroundMode(Qt::NoBackground);
@@ -36,7 +36,7 @@ PannerView::~PannerView()
 void PannerView::drawContents(QPainter* p,  int clipx, int clipy, int clipw, int cliph)
 {
     p->save();
-    Q3CanvasView::drawContents(p,clipx,clipy,clipw,cliph);
+    QGraphicsView::drawContents(p,clipx,clipy,clipw,cliph);
     p->restore();
     if (m_ZoomRect.isValid()) {
         p->setPen(Qt::darkRed);
