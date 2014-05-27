@@ -21,8 +21,10 @@
 #ifndef __GRAPHTREE_DEFINES
 #define __GRAPHTREE_DEFINES
 
+#include <QGraphicsItem>
+
 enum {
-    GRAPHTREE_LABEL = 1100,
+    GRAPHTREE_LABEL = QGraphicsItem::UserType + 1,
     GRAPHTREE_LINE,
     GRAPHTREE_ARROW,
     GRAPHTREE_MARK

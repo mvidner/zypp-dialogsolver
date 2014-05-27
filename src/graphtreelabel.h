@@ -34,7 +34,7 @@ public:
     GraphTreeLabel(const QString&,const QString&,const QRect&r,QGraphicsScene*c);
     virtual ~GraphTreeLabel();
 
-    virtual int rtti()const;
+    virtual int type()const;
     virtual void drawShape(QPainter& p);
 
     void setBgColor(const QColor&);
@@ -59,7 +59,7 @@ public:
     GraphEdgeArrow(GraphEdge*,QGraphicsScene*);
     GraphEdge*edge();
     virtual void drawShape(QPainter&);
-    virtual int rtti()const;
+    virtual int type()const;
 
 private:
     GraphEdge*_edge;
@@ -74,7 +74,7 @@ public:
 
     virtual void drawShape(QPainter&);
     Q3PointArray areaPoints() const;
-    virtual int rtti()const;
+    virtual int type()const;
 };
 
 class GraphMark:public QGraphicsRectItem
@@ -82,7 +82,7 @@ class GraphMark:public QGraphicsRectItem
 public:
     GraphMark(GraphTreeLabel*,QGraphicsScene*);
     virtual ~GraphMark();
-    virtual int rtti()const;
+    virtual int type()const;
     virtual bool hit(const QPoint&)const;
 
     virtual void drawShape(QPainter&);

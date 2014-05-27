@@ -41,7 +41,7 @@ const QString&GraphTreeLabel::nodename()const
     return m_Nodename;
 }
 
-int GraphTreeLabel::rtti()const
+int GraphTreeLabel::type()const
 {
     return GRAPHTREE_LABEL;
 }
@@ -139,7 +139,7 @@ Q3PointArray GraphEdge::areaPoints() const
 
 }
 
-int GraphEdge::rtti()const
+int GraphEdge::type()const
 {
     return GRAPHTREE_LINE;
 }
@@ -154,7 +154,7 @@ void GraphEdgeArrow::drawShape(QPainter&p)
     QGraphicsPolygonItem::drawShape(p);
 }
 
-int GraphEdgeArrow::rtti()const
+int GraphEdgeArrow::type()const
 {
     return GRAPHTREE_ARROW;
 }
@@ -216,7 +216,7 @@ bool GraphMark::hit(const QPoint&)const
     return false;
 }
 
-int GraphMark::rtti()const
+int GraphMark::type()const
 {
     return GRAPHTREE_MARK;
 }
