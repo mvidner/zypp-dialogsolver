@@ -107,8 +107,9 @@ void PannerView::contentsMouseReleaseEvent(QMouseEvent*)
  */
 void PannerView::updateCurrentRect()
 {
-    if (m_ZoomRect.isValid())
-      // FIXME updateContents(m_ZoomRect);
+    if (m_ZoomRect.isValid()) {
+        // FIXME updateContents(m_ZoomRect);
+    }
 }
 
 #include "pannerview.moc"

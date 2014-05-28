@@ -23,6 +23,7 @@
 #include "pannerview.h"
 #include "graphtree_defines.h"
 #include <QProcess>
+#include <QScrollBar>
 #include <qtooltip.h>
 #include <qwmatrix.h>
 #include <qpainter.h>
@@ -261,7 +262,7 @@ void ResGraphView::dotExit()
 	    if (isRecommended(node2Name))
 		arrowColor = Qt::green;
             n->setPen(QPen(arrowColor,1));
-            n->setControlPoints(pa,false);
+            n->setPath(fromControlPoints(pa));
             n->setZValue(0.5);
             n->show();
 
@@ -278,11 +279,11 @@ void ResGraphView::dotExit()
             if (it!=m_NodeList.end()) {
                 GraphTreeLabel*tlab = it.data();
                 if (tlab) {
-                    QPoint toCenter = tlab->rect().center();
-                    int dx0 = pa.point(0).x() - toCenter.x();
-                    int dy0 = pa.point(0).y() - toCenter.y();
-                    int dx1 = pa.point(points-1).x() - toCenter.x();
-                    int dy1 = pa.point(points-1).y() - toCenter.y();
+                    QPointF toCenter = tlab->rect().center();
+                    double dx0 = pa.point(0).x() - toCenter.x();
+                    double dy0 = pa.point(0).y() - toCenter.y();
+                    double dx1 = pa.point(points-1).x() - toCenter.x();
+                    double dy1 = pa.point(points-1).y() - toCenter.y();
                     if (dx0*dx0+dy0*dy0 > dx1*dx1+dy1*dy1) {
                     // start of spline is nearer to call target node
                         indexHead=-1;
@@ -305,16 +306,16 @@ void ResGraphView::dotExit()
             if (!arrowDir.isNull()) {
                 arrowDir *= 10.0/sqrt(double(arrowDir.x()*arrowDir.x() +
                     arrowDir.y()*arrowDir.y()));
-                Q3PointArray a(3);
-                a.setPoint(0, pa.point(indexHead) + arrowDir);
-                a.setPoint(1, pa.point(indexHead) + QPoint(arrowDir.y()/2,
-                    -arrowDir.x()/2));
-                a.setPoint(2, pa.point(indexHead) + QPoint(-arrowDir.y()/2,
-                    arrowDir.x()/2));
+                QPolygonF a;
+                a << pa.point(indexHead) + arrowDir;
+                a << pa.point(indexHead) + QPointF(arrowDir.y()/2,
+                                                   -arrowDir.x()/2);
+                a <<  pa.point(indexHead) + QPoint(-arrowDir.y()/2,
+                                                   arrowDir.x()/2);
                 GraphEdgeArrow* aItem = new GraphEdgeArrow(n,m_Canvas);
-                aItem->setPoints(a);
+                aItem->setPolygon(a);
                 aItem->setBrush(arrowColor);
-                aItem->setZ(1.5);
+                aItem->setZValue(1.5);
                 aItem->show();
 //                sItem->setArrow(aItem);
             }
@@ -578,27 +579,30 @@ void ResGraphView::updateSizes(QSize s)
 
     if (cvZoomW != _cvZoomW
 	|| cvZoomH != _cvZoomH) {
-      _cvZoomW = cvZoomW; 
-      _cvZoomH = cvZoomH;    
-	
-      if (0) qDebug("Canvas Size: %dx%d, Visible: %dx%d, ZoomH: %f, ZoomW: %f",
+      _cvZoomW = cvZoomW;
+      _cvZoomH = cvZoomH;
+
+      if (0) qDebug("Canvas Size: %fx%f, Visible: %dx%d, ZoomH: %f, ZoomW: %f",
             m_Canvas->width(), m_Canvas->height(),
             cWidth, cHeight, cvZoomH, cvZoomW);
 
-      QWMatrix wm;
+      QMatrix wm;
       wm.scale( _cvZoomW, _cvZoomH );
-      m_CompleteView->setWorldMatrix(wm);
+      m_CompleteView->setMatrix(wm);
 
       // make it a little bigger to compensate for widget frame
       m_CompleteView->resize(int(cWidth * _cvZoomW) + 4,
                             int(cHeight * _cvZoomH) + 4);
 
       // update ZoomRect in completeView
-      contentsMovingSlot(contentsX(), contentsY());
+      //FIXME      contentsMovingSlot(contentsX(), contentsY());
     }
 
+
+    /* FIXME
     m_CompleteView->setContentsPos(int(_cvZoomW*(_xMargin-50)),
                   int(_cvZoomH*(_yMargin-50)));
+    */
     updateZoomerPos();
 }
 
@@ -612,26 +616,21 @@ void ResGraphView::updateZoomerPos()
     QPoint oldZoomPos = m_CompleteView->pos();
     QPoint newZoomPos = QPoint(0,0);
 
-#if 0
-    ZoomPosition zp = _zoomPosition;
-    if (zp == Auto) {
-#else
-    ZoomPosition zp = m_LastAutoPosition;
-#endif
-    QPoint tl1Pos = viewportToContents(QPoint(0,0));
-    QPoint tl2Pos = viewportToContents(QPoint(cvW,cvH));
-    QPoint tr1Pos = viewportToContents(QPoint(x,0));
-    QPoint tr2Pos = viewportToContents(QPoint(x+cvW,cvH));
-    QPoint bl1Pos = viewportToContents(QPoint(0,y));
-    QPoint bl2Pos = viewportToContents(QPoint(cvW,y+cvH));
-    QPoint br1Pos = viewportToContents(QPoint(x,y));
-    QPoint br2Pos = viewportToContents(QPoint(x+cvW,y+cvH));
-    int tlCols = m_Canvas->collisions(QRect(tl1Pos,tl2Pos)).count();
-    int trCols = m_Canvas->collisions(QRect(tr1Pos,tr2Pos)).count();
-    int blCols = m_Canvas->collisions(QRect(bl1Pos,bl2Pos)).count();
-    int brCols = m_Canvas->collisions(QRect(br1Pos,br2Pos)).count();
+    QPointF tl1Pos = mapToScene(QPoint(0,0));
+    QPointF tl2Pos = mapToScene(QPoint(cvW,cvH));
+    QPointF tr1Pos = mapToScene(QPoint(x,0));
+    QPointF tr2Pos = mapToScene(QPoint(x+cvW,cvH));
+    QPointF bl1Pos = mapToScene(QPoint(0,y));
+    QPointF bl2Pos = mapToScene(QPoint(cvW,y+cvH));
+    QPointF br1Pos = mapToScene(QPoint(x,y));
+    QPointF br2Pos = mapToScene(QPoint(x+cvW,y+cvH));
+    int tlCols = m_Canvas->items(QRectF(tl1Pos,tl2Pos)).count();
+    int trCols = m_Canvas->items(QRectF(tr1Pos,tr2Pos)).count();
+    int blCols = m_Canvas->items(QRectF(bl1Pos,bl2Pos)).count();
+    int brCols = m_Canvas->items(QRectF(br1Pos,br2Pos)).count();
     int minCols = tlCols;
-    zp = m_LastAutoPosition;
+
+    ZoomPosition zp = m_LastAutoPosition;
     switch(zp) {
         case TopRight:    minCols = trCols; break;
         case BottomLeft:  minCols = blCols; break;
@@ -645,9 +644,7 @@ void ResGraphView::updateZoomerPos()
     if (minCols > brCols) { minCols = brCols; zp = BottomRight; }
 
     m_LastAutoPosition = zp;
-#if 0
-    }
-#endif
+
     switch(zp) {
     case TopRight:
         newZoomPos = QPoint(x,0);
@@ -666,6 +663,7 @@ void ResGraphView::updateZoomerPos()
 
 void ResGraphView::contentsMovingSlot(int x,int y)
 {
+    /* FIXME
     QRect z(int(x * _cvZoomW), int(y * _cvZoomH),
         int(visibleWidth() * _cvZoomW)-1, int(visibleHeight() * _cvZoomH)-1);
     if (0) qDebug("moving: (%d,%d) => (%d/%d - %dx%d)",
@@ -674,15 +672,18 @@ void ResGraphView::contentsMovingSlot(int x,int y)
     if (!_noUpdateZoomerPos) {
         updateZoomerPos();
     }
+    */
 }
 
 void ResGraphView::zoomRectMoved(int dx,int dy)
 {
+    /* FIXME
   if (leftMargin()>0) dx = 0;
   if (topMargin()>0) dy = 0;
   _noUpdateZoomerPos = true;
   scrollBy(int(dx/_cvZoomW),int(dy/_cvZoomH));
   _noUpdateZoomerPos = false;
+    */
 }
 
 void ResGraphView::zoomRectMoveFinished()
@@ -698,11 +699,11 @@ bool ResGraphView::event(QEvent *event)
 {
      if (event->type() == QEvent::ToolTip) {
          QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
-	 QPoint cPos = viewportToContents(helpEvent->pos());
-	 QList l = canvas()->collisions(cPos);
+	 QPointF cPos = mapToScene(helpEvent->pos());
+	 QList<QGraphicsItem *> l = scene()->items(cPos);
 	 if (l.count() > 0) {
 	     QGraphicsItem* i = l.first();
-	     if (i->rtti() == GRAPHTREE_LABEL) {
+	     if (i->type() == GRAPHTREE_LABEL) {
 		 GraphTreeLabel*tl = (GraphTreeLabel*)i;
 		 QString nm = tl->nodename();
 		 QString tipStr = toolTip(nm);
@@ -736,7 +737,7 @@ void ResGraphView::makeSelected(GraphTreeLabel*gtl)
     }
     if (gtl) {
         m_Marker = new GraphMark(gtl,m_Canvas);
-        m_Marker->setZ(-1);
+        m_Marker->setZValue(-1);
         m_Marker->show();
         m_Selected->setSelected(true);
     }
@@ -748,10 +749,10 @@ void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
     setFocus();
     if (e->button() == Qt::LeftButton) {
-        QList l = canvas()->collisions(e->pos());
+        QList<QGraphicsItem *> l = scene()->items(e->pos());
         if (l.count()>0) {
             QGraphicsItem* i = l.first();
-            if (i->rtti()==GRAPHTREE_LABEL) {
+            if (i->type()==GRAPHTREE_LABEL) {
 		trevTree::ConstIterator it;
 		it = m_Tree.find(((GraphTreeLabel*)i)->nodename());
 		if (it!=m_Tree.end()) {
@@ -786,10 +787,10 @@ void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
     _isMoving = false;
     updateZoomerPos();
     if (e->button() == Qt::LeftButton) {
-        QList l = canvas()->collisions(e->pos());
+        QList<QGraphicsItem *> l = scene()->items(e->pos());
         if (l.count()>0) {
             QGraphicsItem* i = l.first();
-            if (i->rtti()==GRAPHTREE_LABEL) {
+            if (i->type()==GRAPHTREE_LABEL) {
                 makeSelected( (GraphTreeLabel*)i);
 		
 		trevTree::ConstIterator it;
@@ -805,6 +806,7 @@ void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
 
 void ResGraphView::contentsMouseMoveEvent ( QMouseEvent * e )
 {
+    /* FIXME
     if (_isMoving) {
         int dx = e->globalPos().x() - _lastPos.x();
         int dy = e->globalPos().y() - _lastPos.y();
@@ -813,6 +815,7 @@ void ResGraphView::contentsMouseMoveEvent ( QMouseEvent * e )
         _noUpdateZoomerPos = false;
         _lastPos = e->globalPos();
     }
+    */
 }
 
 void ResGraphView::setNewDirection(int dir)
@@ -826,7 +829,7 @@ void ResGraphView::setNewDirection(int dir)
 void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
 {
     if (!m_Canvas) return;
-    QList l = canvas()->collisions(e->pos());
+    QList<QGraphicsItem *> l = scene()->items(e->pos());
     QGraphicsItem* i = (l.count() == 0) ? 0 : l.first();
     trevTree::ConstIterator it;
 
@@ -834,7 +837,7 @@ void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
     QAction * selectItem = NULL;
     QAction * displayDetails = NULL;
     QMenu popup;
-    if (i && i->rtti()==GRAPHTREE_LABEL) {
+    if (i && i->type()==GRAPHTREE_LABEL) {
         if (m_Selected == i) {
             unselectItem = popup.addAction(i18n("Unselect item"));
         } else {
@@ -879,9 +882,9 @@ void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
             if (m_Selected) {
                 m_Selected->setSelected(false);
             }
-            QPixmap pix(m_Canvas->size());
+            QPixmap pix(m_Canvas->sceneRect().size().toSize());
             QPainter p(&pix);
-            m_Canvas->drawArea( m_Canvas->rect(), &p );
+            m_Canvas->render( &p );
             pix.save(fn,"PNG");
             if (m_Marker) {
                 m_Marker->show();
@@ -933,8 +936,10 @@ void ResGraphView::selectItem(const QString & itemString) {
 	    emit dispDetails(toolTip(tlab->nodename(),true),
 			     it.data().item);
 	}
+    /* FIXME
 	setContentsPos (tlab->x() - int(visibleWidth() *_cvZoomW/2),
 			tlab->y() - int(visibleHeight() *_cvZoomH/2));
+    */
     }
 }
 
@@ -957,8 +962,8 @@ void ResGraphView::init()
     m_Marker = 0;
     m_CompleteView = new PannerView(this);
 
-    m_CompleteView->setVScrollBarMode(Q3ScrollView::AlwaysOff);
-    m_CompleteView->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+    m_CompleteView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_CompleteView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_CompleteView->raise();
     m_CompleteView->hide();
     connect(this, SIGNAL(contentsMoving(int,int)),
