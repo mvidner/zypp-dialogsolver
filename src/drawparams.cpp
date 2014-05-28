@@ -28,12 +28,12 @@
 #include <qregexp.h>
 #include <qstyle.h>
 #include <q3popupmenu.h>
+#include <QDebug>
 
 #include "drawparams.h"
 
-
 // set this to 1 to enable debug output
-#define DEBUG_DRAWING 0
+#define DEBUG_DRAWING 1
 #define MAX_FIELD 12
 
 
@@ -338,8 +338,10 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
 
   QRectF r = _rect;
 
-//  if (0) Debug(90100) << "DrawField: Rect " << r.x() << "/" << r.y()
-//		   << " - " << r.width() << "x" << r.height() << endl;
+#if DEBUG_DRAWING
+  qDebug() << "DrawField: Rect " << r.x() << "/" << r.y()
+           << " - " << r.width() << "x" << r.height() << endl;
+#endif
 
   int h = _fontHeight;
   bool rotate = dp->rotated();
@@ -498,8 +500,10 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
   // width of text and pixmap to be drawn
   int w = pixW + _fm->width(name);
 
-//  if (0) Debug(90100) << "  For '" << name << "': Unused " << unused
-//		   << ", StrW " << w << ", Width " << width << endl;
+#if DEBUG_DRAWING
+  qDebug() << "  For '" << name << "': Unused " << unused
+           << ", StrW " << w << ", Width " << width << endl;
+#endif
 
   // if we have limited space at 1st line:
   // use it only if whole name does fit in last line...
@@ -641,9 +645,10 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
 	pixDrawn = true;
     }
 
-
-//    if (0) Debug(90100) << "  Drawing '" << name << "' at "
-//		     << x+pixW << "/" << y << endl;
+#if DEBUG_DRAWING
+    qDebug() << "  Drawing '" << name << "' at "
+             << x+pixW << "/" << y << endl;
+#endif
 
     p->drawText( x+pixW, y+10,
 		 width - pixW, h,

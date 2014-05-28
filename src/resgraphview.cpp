@@ -46,6 +46,9 @@
 #define LABEL_WIDTH 160
 #define LABEL_HEIGHT 90
 
+// set this to 1 to enable debug output
+#define DEBUG_DRAWING 1
+
 using namespace zypp;
 
 static int globalDirection = 0;
@@ -247,8 +250,10 @@ void ResGraphView::dotExit()
                 int xx = (int)(scaleX * x + _xMargin);
                 int yy = (int)(scaleY * (dotHeight - y) + _yMargin);
 
-                if (0) qDebug("   P %d: ( %f / %f ) => ( %d / %d)",
-                    i, x, y, xx, yy);
+#if DEBUG_DRAWING
+                qDebug("   P %d: ( %f / %f ) => ( %d / %d)",
+                       i, x, y, xx, yy);
+#endif
                 pa.setPoint(i, xx, yy);
             }
             if (i < points) {
@@ -582,9 +587,11 @@ void ResGraphView::updateSizes(QSize s)
       _cvZoomW = cvZoomW;
       _cvZoomH = cvZoomH;
 
-      if (0) qDebug("Canvas Size: %fx%f, Visible: %dx%d, ZoomH: %f, ZoomW: %f",
+#if DEBUG_DRAWING
+      qDebug("Canvas Size: %fx%f, Visible: %dx%d, ZoomH: %f, ZoomW: %f",
             m_Canvas->width(), m_Canvas->height(),
             cWidth, cHeight, cvZoomH, cvZoomW);
+#endif
 
       QMatrix wm;
       wm.scale( _cvZoomW, _cvZoomH );
@@ -663,11 +670,14 @@ void ResGraphView::updateZoomerPos()
 
 void ResGraphView::contentsMovingSlot(int x,int y)
 {
-    /* FIXME
-    QRect z(int(x * _cvZoomW), int(y * _cvZoomH),
-        int(visibleWidth() * _cvZoomW)-1, int(visibleHeight() * _cvZoomH)-1);
-    if (0) qDebug("moving: (%d,%d) => (%d/%d - %dx%d)",
+    //    QRect z(int(x * _cvZoomW), int(y * _cvZoomH),
+    //        int(visibleWidth() * _cvZoomW)-1, int(visibleHeight() * _cvZoomH)-1);
+    QRect z(0, 0, 0, 0);
+#if DEBUG_DRAWING
+    qDebug("moving: (%d,%d) => (%d/%d - %dx%d)",
                 x, y, z.x(), z.y(), z.width(), z.height());
+#endif
+    /* FIXME
     m_CompleteView->setZoomRect(z);
     if (!_noUpdateZoomerPos) {
         updateZoomerPos();
