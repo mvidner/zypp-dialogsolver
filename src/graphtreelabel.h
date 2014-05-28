@@ -35,7 +35,7 @@ public:
     virtual ~GraphTreeLabel();
 
     virtual int type()const;
-    virtual void drawShape(QPainter& p);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     void setBgColor(const QColor&);
 
@@ -58,7 +58,7 @@ class GraphEdgeArrow:public QGraphicsPolygonItem
 public:
     GraphEdgeArrow(GraphEdge*,QGraphicsScene*);
     GraphEdge*edge();
-    virtual void drawShape(QPainter&);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual int type()const;
 
 private:
@@ -72,7 +72,7 @@ public:
     GraphEdge(QGraphicsScene*);
     virtual ~GraphEdge();
 
-    virtual void drawShape(QPainter&);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual int type()const;
 };
 
@@ -84,7 +84,7 @@ public:
     virtual int type()const;
     virtual bool hit(const QPoint&)const;
 
-    virtual void drawShape(QPainter&);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     static QPixmap*_p;
 };

@@ -52,8 +52,9 @@ void GraphTreeLabel::setBgColor(const QColor&c)
     _backColor=c;
 }
 
-void GraphTreeLabel::drawShape(QPainter& p)
+void GraphTreeLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QPainter & p = *painter;
     QRectF r = rect();
 /*
     p.setPen(blue);
@@ -97,8 +98,9 @@ GraphEdge::~GraphEdge()
 {
 }
 
-void GraphEdge::drawShape(QPainter& p)
+void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QPainter & p = *painter;
     //    p.drawPolyline(poly);
 }
 
@@ -113,9 +115,9 @@ GraphEdgeArrow::GraphEdgeArrow(GraphEdge*_parent, QGraphicsScene*c)
 {
 }
 
-void GraphEdgeArrow::drawShape(QPainter&p)
+void GraphEdgeArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //    QGraphicsPolygonItem::drawShape(p);
+    QGraphicsPolygonItem::paint(painter, option, widget);
 }
 
 int GraphEdgeArrow::type()const
@@ -185,7 +187,8 @@ int GraphMark::type()const
     return GRAPHTREE_MARK;
 }
 
-void GraphMark::drawShape(QPainter&p)
+void GraphMark::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QPainter & p = *painter;
     p.drawPixmap( int(x()), int(y()), *_p );
 }
