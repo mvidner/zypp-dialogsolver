@@ -725,7 +725,7 @@ bool ResGraphView::event(QEvent *event)
 	     }
 	 }
      }
-     return QWidget::event(event);
+     return QGraphicsView::event(event);
 }
 
 void ResGraphView::resizeEvent(QResizeEvent*e)
