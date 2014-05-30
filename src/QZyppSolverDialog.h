@@ -1,6 +1,7 @@
 #ifndef QZYPPSOLVERDIALOG_H
 #define QZYPPSOLVERDIALOG_H
 
+#include <QtGlobal>
 #include <qdialog.h>
 #include "zypp/solver/detail/Resolver.h"
 
@@ -47,6 +48,8 @@ private:
     operator = (const QZyppSolverDialog &zyppSolverDialog);
     QZyppSolverDialog(const QZyppSolverDialog &zyppSolverDialog);
 
+    static void qtMessageHandler(QtMsgType type, const char * msg);
+    static QtMsgHandler oldMessageHandler;
 };
 
 #endif

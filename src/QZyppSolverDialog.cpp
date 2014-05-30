@@ -4,6 +4,9 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <stdio.h>
+#define YUILogComponent "zypp-dialogsolver"
+#include <yui/YUILog.h>
+#include <set>
 
 #include "QZyppSolverDialog.h"
 #include "solvertree.h"
@@ -11,14 +14,18 @@
 #include "zypp/ZYppFactory.h"
 #include "zypp/ResFilters.h"
 #include "zypp/base/Algorithm.h"
+#include "zypp/base/Backtrace.h"
 
 using namespace zypp;
+
+QtMsgHandler QZyppSolverDialog::oldMessageHandler = NULL;
 
 QZyppSolverDialog::QZyppSolverDialog(zypp::solver::detail::Resolver_Ptr r)
       : QDialog(0,"Solvertree",true)
       , resolver (r)
       , solvertree(0)
 {
+    QZyppSolverDialog::oldMessageHandler = qInstallMsgHandler(QZyppSolverDialog::qtMessageHandler);
     QHBoxLayout* layout = new QHBoxLayout (this);
     solvertree = new SolverTree(this, resolver);
     layout->addWidget( solvertree->getView());
@@ -53,6 +60,7 @@ QZyppSolverDialog::QZyppSolverDialog(const zypp::PoolItem item)
       , resolver (NULL)
       , solvertree(0)
 {
+    QZyppSolverDialog::oldMessageHandler = qInstallMsgHandler(QZyppSolverDialog::qtMessageHandler);
     zypp::ResPool pool( zypp::getZYpp()->pool() );
     pool.proxy().saveState(); // Save old pool
     const QCursor oldCursor = cursor ();
@@ -90,8 +98,21 @@ QZyppSolverDialog::QZyppSolverDialog(const zypp::PoolItem item)
 
 QZyppSolverDialog::~QZyppSolverDialog()
 {
+    qInstallMsgHandler(oldMessageHandler);
 }
 
+static std::set<std::string> backtrace_seen_for_message;
+
+void QZyppSolverDialog::qtMessageHandler(QtMsgType type, const char * msg)
+{
+    oldMessageHandler(type, msg);
+    if (type == QtDebugMsg)
+        return;
+    if (backtrace_seen_for_message.find(msg) == backtrace_seen_for_message.end()) {
+        yuiMilestone() << zypp::dumpBacktrace << std::endl;
+        backtrace_seen_for_message.insert(msg);
+    }
+}
 
 void QZyppSolverDialog::selectItem(const zypp::PoolItem item) {
     solvertree->selectItem(item);
