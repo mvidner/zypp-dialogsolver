@@ -189,5 +189,5 @@ int GraphMark::type()const
 void GraphMark::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPainter & p = *painter;
-    p.drawPixmap( int(x()), int(y()), *_p );
+    p.drawPixmap( 0, 0, *_p );
 }
