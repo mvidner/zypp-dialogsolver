@@ -100,8 +100,7 @@ GraphEdge::~GraphEdge()
 
 void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QPainter & p = *painter;
-    //    p.drawPolyline(poly);
+    QGraphicsPathItem::paint(painter, option, widget);
 }
 
 int GraphEdge::type()const
