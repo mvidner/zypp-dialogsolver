@@ -62,9 +62,8 @@ void PannerView::setZoomRect(const QRect& theValue)
 {
     QRect oldRect = m_ZoomRect;
     m_ZoomRect = theValue;
-    // http://doc.qt.digia.com/4.0/q3scrollview.html#updateContents-2
-    //FIXME    updateContents(oldRect);
-    //FIXME    updateContents(m_ZoomRect);
+    update(oldRect);
+    update(m_ZoomRect);
 }
 
 /*!
@@ -108,7 +107,7 @@ void PannerView::contentsMouseReleaseEvent(QMouseEvent*)
 void PannerView::updateCurrentRect()
 {
     if (m_ZoomRect.isValid()) {
-        // FIXME updateContents(m_ZoomRect);
+        update(m_ZoomRect);
     }
 }
 
