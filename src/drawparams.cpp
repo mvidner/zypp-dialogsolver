@@ -340,7 +340,7 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
 
 #if DEBUG_DRAWING
   qDebug() << "DrawField: Rect " << r.x() << "/" << r.y()
-           << " - " << r.width() << "x" << r.height() << endl;
+           << " - " << r.width() << "x" << r.height();
 #endif
 
   int h = _fontHeight;
@@ -502,7 +502,7 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
 
 #if DEBUG_DRAWING
   qDebug() << "  For '" << name << "': Unused " << unused
-           << ", StrW " << w << ", Width " << width << endl;
+           << ", StrW " << w << ", Width " << width;
 #endif
 
   // if we have limited space at 1st line:
@@ -646,8 +646,7 @@ bool RectDrawing::drawField(QPainter* p, int f, DrawParams* dp)
     }
 
 #if DEBUG_DRAWING
-    qDebug() << "  Drawing '" << name << "' at "
-             << x+pixW << "/" << y << endl;
+    qDebug() << "  Drawing '" << name << "' at " << x+pixW << "/" << y;
 #endif
 
     p->drawText( x+pixW, y+10,
