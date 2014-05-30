@@ -126,13 +126,13 @@ protected:
     double _cvZoomH;    
     ZoomPosition m_LastAutoPosition;
 
-    virtual bool event(QEvent *event);    
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void contentsMousePressEvent ( QMouseEvent * e );
-    virtual void contentsMouseReleaseEvent ( QMouseEvent * e );
-    virtual void contentsMouseMoveEvent ( QMouseEvent*e);
-    virtual void contentsContextMenuEvent(QContextMenuEvent*e);
-    virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
+    virtual bool event(QEvent *event) override;
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void mousePressEvent ( QMouseEvent * e ) override;
+    virtual void mouseReleaseEvent ( QMouseEvent * e ) override;
+    virtual void mouseMoveEvent ( QMouseEvent*e) override;
+    virtual void contextMenuEvent(QContextMenuEvent*e) override;
+    virtual void mouseDoubleClickEvent ( QMouseEvent * e ) override;
 
     bool _isMoving;
     QPoint _lastPos;

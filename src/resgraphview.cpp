@@ -755,7 +755,7 @@ void ResGraphView::makeSelected(GraphTreeLabel*gtl)
     m_CompleteView->updateCurrentRect();
 }
 
-void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
+void ResGraphView::mouseDoubleClickEvent ( QMouseEvent * e )
 {
     setFocus();
     if (e->button() == Qt::LeftButton) {
@@ -785,14 +785,14 @@ void ResGraphView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
     }
 }
 
-void ResGraphView::contentsMousePressEvent ( QMouseEvent * e )
+void ResGraphView::mousePressEvent ( QMouseEvent * e )
 {
     setFocus();
     _isMoving = true;
     _lastPos = e->globalPos();
 }
 
-void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
+void ResGraphView::mouseReleaseEvent ( QMouseEvent * e)
 {
     _isMoving = false;
     updateZoomerPos();
@@ -802,7 +802,7 @@ void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
             QGraphicsItem* i = l.first();
             if (i->type()==GRAPHTREE_LABEL) {
                 makeSelected( (GraphTreeLabel*)i);
-		
+
 		trevTree::ConstIterator it;
 		it = m_Tree.find(((GraphTreeLabel*)i)->nodename());
 		if (it!=m_Tree.end()) {
@@ -811,10 +811,10 @@ void ResGraphView::contentsMouseReleaseEvent ( QMouseEvent * e)
 		}
             }
         }
-    }    
+    }
 }
 
-void ResGraphView::contentsMouseMoveEvent ( QMouseEvent * e )
+void ResGraphView::mouseMoveEvent ( QMouseEvent * e )
 {
     /* FIXME
     if (_isMoving) {
@@ -836,7 +836,7 @@ void ResGraphView::setNewDirection(int dir)
     dumpRevtree();
 }
 
-void ResGraphView::contentsContextMenuEvent(QContextMenuEvent* e)
+void ResGraphView::contextMenuEvent(QContextMenuEvent* e)
 {
     if (!m_Canvas) return;
     QList<QGraphicsItem *> l = scene()->items(e->pos());
